@@ -11,4 +11,8 @@ import java.util.Optional;
 public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task>findAll();
     Task getById(Long taskId);
+    Task save(Task task);
+    Optional<Task> findById(Long taskId);
+
+
 }
