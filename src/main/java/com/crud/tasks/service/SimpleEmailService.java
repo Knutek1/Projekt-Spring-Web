@@ -1,9 +1,11 @@
 package com.crud.tasks.service;
 
 import com.crud.tasks.domain.Mail;
+import com.crud.tasks.trello.client.TrelloClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,7 +24,8 @@ public class SimpleEmailService {
 
     @Autowired
     private MailCreatorService mailCreatorService;
-
+    @Autowired
+    private TrelloClient trelloClient;
     private final JavaMailSender javaMailSender;
 
     public void send(final Mail mail) {
@@ -35,12 +38,19 @@ public class SimpleEmailService {
             log.error("Failed to process email sending: " + e.getMessage(), e);
         }
     }
+
     private MimeMessagePreparator createMimeMessage(final Mail mail) {
+
+
         return mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(mail.getMailTo());
             messageHelper.setSubject(mail.getSubject());
-            messageHelper.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()), true);
+            if (trelloClient.isCreateTrelloCardMethodCalled) {
+                messageHelper.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()), true);
+            }
+            else
+            messageHelper.setText(mailCreatorService.buildAmountOfTasksMail(mail.getMessage()), true);
         };
     }
 

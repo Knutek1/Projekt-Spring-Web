@@ -24,6 +24,7 @@ public class TrelloClient {
     private final RestTemplate restTemplate;
     private final TrelloConfig trelloConfig;
     private final Logger LOGGER = LoggerFactory.getLogger(TrelloClient.class);
+    public boolean isCreateTrelloCardMethodCalled;
 
 
     public List<TrelloBoardDto> getTrelloBoards() {
@@ -62,6 +63,7 @@ public class TrelloClient {
                 .build()
                 .encode()
                 .toUri();
+        isCreateTrelloCardMethodCalled = true;
         return restTemplate.postForObject(url,null, CreatedTrelloCardDto.class);
     }
 }
